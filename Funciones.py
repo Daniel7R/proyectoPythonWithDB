@@ -7,7 +7,7 @@ import cv2
 import shutil
 import face_recognition
 from PIL import Image,ImageDraw,ImageFont
-
+from os import remove
 
 def Menu():
 
@@ -22,9 +22,8 @@ def Menu():
     print("7) Salir")
 
 def Conexion():
-    
+    #Creo la conexión  a la base de datos
     conexion = db.connect('Driver={ODBC Driver 17 for SQL Server}; server=DESKTOP-3NMGU88;database=proyectoFinalPython;Trusted_Connection=yes')
-
 
     return conexion
 
@@ -64,7 +63,6 @@ def AgregarDatos(nombre,apellido):
 
         cur.close()
         con.commit()
-        con.close()
 
         print("\nDatos Insertados Correctamente En La Base de Datos UwU")
         print()
@@ -72,6 +70,8 @@ def AgregarDatos(nombre,apellido):
     else:
 
         print("\nNo Se Identificar La Cara, Intente Nuevamente :)")
+
+    con.close()
 
 def AgregarLibro(nombreL, GeneroL, AutorL):
 
@@ -94,6 +94,7 @@ def Mostrarlibros():
      "Autor from tblLibros",con)
     
     print(df)
+    con.close()
 
 def sacarPrestamo(cod):
 
@@ -171,21 +172,19 @@ def sacarPrestamo(cod):
                     objImagen.show()
                     cur.close()
                     con.commit()
-                    con.close()
 
-                    print("Prestamo realizado correctamente")
+                    print("Prestamo realizado correctamente 7u7 \n")
 
 
                 else:
 
                     print("\nEl codigo de libro ingresado no existe </3 \n")
 
-            else:
-                
-                print()
-
     else:
         print("\nNo se pudo detectar la cara, por favor intente todo nuevamente :b")
+
+    con.close()
+    borrarFotosPrestamo()
 
 
 def mostrarPrestamos():
@@ -197,17 +196,16 @@ def mostrarPrestamos():
     datos.to_html(index=False)
 
     print(datos)
+    con.close()
 
 def regresarLibro(codLibro):
-
-   
 
     camara = cv2.VideoCapture(0,cv2.CAP_DSHOW)
 
     for i in range(10):
 
         valor,imagen = camara.read()
-        cv2.imwrite("./CarpetaBasura/usuario" + str(i+1) + "devolucion.png",imagen)
+        cv2.imwrite("./CarpetaBasura/Usuario" + str(i+1) + "devolucion.png",imagen)
 
     del(camara)
     
@@ -281,7 +279,22 @@ def regresarLibro(codLibro):
     else:
 
         print("\nNo fue posible completar la operación, por favor intenta nuevamente ;)")
-                
+    
+    borrarFotosDevolucion()
 
+    
+def borrarFotosPrestamo():
+    
+    Ruta = './CarpetaBasura/Usuario'
 
+    for i in range(10):
 
+        remove('{}{}.png'.format(Ruta,str(i+1)))
+
+def borrarFotosDevolucion():
+
+    ruta = './CarpetaBasura/Usuario'
+
+    for i in range(10):
+
+        remove('{}{}devolucion.png'.format(ruta,str(i+1)))
